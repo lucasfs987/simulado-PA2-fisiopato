@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulado PA2 · Fisiopatologia · 2º Bimestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#7a1f3d;
+    --wine-deep:#5c1530;
+    --ink:#2b2530;
+    --paper:#faf6f1;
+    --card:#ffffff;
+    --line:#e7ddd4;
+    --muted:#857a82;
+    --correct:#2f7d5d;
+    --correct-bg:#e8f4ee;
+    --wrong:#b23b3b;
+    --wrong-bg:#fbeceb;
+    --gold:#c08a2d;
+    --shadow:0 10px 30px rgba(43,37,48,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+    padding:24px 16px 64px;
+    min-height:100vh;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+
+  /* Header */
+  header.top{text-align:center;margin-bottom:28px}
+  .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--wine);font-weight:600;margin-bottom:6px}
+  h1{font-family:'Spectral',Georgia,serif;font-weight:700;font-size:2.1rem;line-height:1.1;letter-spacing:-.01em}
+  h1 .accent{color:var(--wine)}
+  .sub{color:var(--muted);font-size:.95rem;margin-top:8px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:26px}
+
+  /* Start screen */
+  .field{margin-bottom:22px}
+  .field > label{display:block;font-weight:600;font-size:.9rem;margin-bottom:10px;color:var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    border:1px solid var(--line);background:#fff;border-radius:999px;
+    padding:8px 15px;font-size:.86rem;cursor:pointer;font-family:inherit;color:var(--ink);
+    transition:all .15s ease;user-select:none;
+  }
+  .chip:hover{border-color:var(--wine)}
+  .chip.on{background:var(--wine);border-color:var(--wine);color:#fff;font-weight:500}
+  .chip .n{opacity:.65;font-size:.78em;margin-left:5px}
+  .chip.on .n{opacity:.8}
+
+  .toggle-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--line);border-radius:11px;cursor:pointer;background:#fff;transition:border-color .15s}
+  .toggle-row:hover{border-color:var(--wine)}
+  .toggle-row input{display:none}
+  .switch{width:40px;height:23px;border-radius:999px;background:#d9cfc7;position:relative;flex:none;transition:background .18s}
+  .switch::after{content:"";position:absolute;width:17px;height:17px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .18s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .toggle-row input:checked + .switch{background:var(--correct)}
+  .toggle-row input:checked + .switch::after{left:20px}
+  .toggle-txt{font-size:.88rem}
+  .toggle-txt small{display:block;color:var(--muted);font-size:.78rem;margin-top:1px}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    background:var(--wine);color:#fff;border:none;border-radius:12px;
+    padding:15px 26px;font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;
+    width:100%;transition:background .16s,transform .06s;
+  }
+  .btn:hover{background:var(--wine-deep)}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:#fff;color:var(--wine);border:1.5px solid var(--wine)}
+  .btn.ghost:hover{background:#fdf3f6}
+  .btn.sm{width:auto;padding:11px 20px;font-size:.9rem}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+
+  .startmeta{display:flex;justify-content:center;gap:22px;margin-top:18px;color:var(--muted);font-size:.83rem;flex-wrap:wrap}
+  .startmeta b{color:var(--ink)}
+
+  /* Quiz */
+  .progress-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;font-size:.85rem;color:var(--muted)}
+  .progress-head .score b{color:var(--correct)}
+  .bar{height:7px;background:#eaded4;border-radius:999px;overflow:hidden;margin-bottom:22px}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--wine),var(--gold));border-radius:999px;transition:width .35s ease;width:0}
+
+  .tema-tag{display:inline-block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--wine);font-weight:600;background:#f6eef0;padding:4px 10px;border-radius:6px;margin-bottom:14px}
+  .qtext{font-family:'Spectral',Georgia,serif;font-size:1.22rem;line-height:1.45;margin-bottom:20px;color:var(--ink)}
+
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{
+    display:flex;gap:13px;align-items:flex-start;
+    border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;
+    cursor:pointer;background:#fff;transition:border-color .14s,background .14s;text-align:left;font-family:inherit;
+    font-size:.96rem;color:var(--ink);width:100%;line-height:1.4;
+  }
+  .opt:hover:not(.locked){border-color:var(--wine);background:#fdfaf8}
+  .opt .key{
+    flex:none;width:26px;height:26px;border-radius:7px;border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;color:var(--muted);margin-top:1px;transition:all .14s;
+  }
+  .opt.locked{cursor:default}
+  .opt.sel .key{border-color:var(--wine);background:var(--wine);color:#fff}
+  .opt.right{border-color:var(--correct);background:var(--correct-bg)}
+  .opt.right .key{border-color:var(--correct);background:var(--correct);color:#fff}
+  .opt.wrong{border-color:var(--wrong);background:var(--wrong-bg)}
+  .opt.wrong .key{border-color:var(--wrong);background:var(--wrong);color:#fff}
+  .opt .mark{margin-left:auto;font-weight:700;font-size:1.05rem;align-self:center}
+  .opt.right .mark{color:var(--correct)}
+  .opt.wrong .mark{color:var(--wrong)}
+
+  .feedback{margin-top:18px;padding:14px 16px;border-radius:11px;font-size:.9rem;display:none}
+  .feedback.show{display:block}
+  .feedback.ok{background:var(--correct-bg);color:#1f5a41;border:1px solid #bfe0cf}
+  .feedback.no{background:var(--wrong-bg);color:#8a2b2b;border:1px solid #efc9c7}
+  .feedback b{font-weight:700}
+
+  .navrow{display:flex;gap:12px;margin-top:22px}
+  .navrow .btn{flex:1}
+
+  /* Results */
+  .result-hero{text-align:center;padding:8px 0 4px}
+  .ring{width:150px;height:150px;margin:0 auto 14px;position:relative}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .pct .big{font-family:'Spectral',serif;font-size:2.5rem;font-weight:700;line-height:1}
+  .ring .pct .lbl{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:2px}
+  .verdict{font-family:'Spectral',serif;font-size:1.35rem;font-weight:600;margin-bottom:4px}
+  .result-line{color:var(--muted);font-size:.95rem;margin-bottom:22px}
+  .result-line b{color:var(--ink)}
+
+  .breakdown{margin:6px 0 24px}
+  .brk{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .brk:last-child{border-bottom:none}
+  .brk .name{flex:1;font-size:.9rem}
+  .brk .minibar{flex:1.4;height:8px;background:#eee4db;border-radius:999px;overflow:hidden}
+  .brk .minibar i{display:block;height:100%;background:var(--wine);border-radius:999px}
+  .brk .frac{font-variant-numeric:tabular-nums;font-size:.85rem;color:var(--muted);min-width:46px;text-align:right}
+
+  .review-toggle{text-align:center;margin-bottom:18px}
+  .review{display:none}
+  .review.show{display:block}
+  .rev-item{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;background:#fff}
+  .rev-q{font-family:'Spectral',serif;font-size:1rem;font-weight:600;margin-bottom:10px;line-height:1.4}
+  .rev-a{font-size:.87rem;padding:7px 11px;border-radius:8px;margin-bottom:6px;line-height:1.4}
+  .rev-a.yours{background:var(--wrong-bg);color:#8a2b2b}
+  .rev-a.correct{background:var(--correct-bg);color:#1f5a41}
+  .rev-a .tag{font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:2px;opacity:.85}
+
+  footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:34px;line-height:1.6}
+  footer .dot{margin:0 6px;opacity:.5}
+
+  .hidden{display:none}
+  @media(max-width:480px){
+    h1{font-size:1.7rem}
+    .card{padding:20px}
+    .qtext{font-size:1.1rem}
+    .navrow{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">Souza Marques · Medicina</div>
+    <h1>Simulado <span class="accent">PA2</span> · Fisiopatologia</h1>
+    <div class="sub">2º Bimestre — neoplasias, choque, anemias, crescimento, desnutrição e genética</div>
+  </header>
+
+  <!-- ===== START ===== -->
+  <section id="start" class="card">
+    <div class="field">
+      <label>Temas (toque para incluir/excluir)</label>
+      <div class="chips" id="temaChips"></div>
+    </div>
+
+    <div class="field">
+      <label>Quantas questões?</label>
+      <div class="chips" id="countChips"></div>
+    </div>
+
+    <div class="field">
+      <label>Modo de correção</label>
+      <label class="toggle-row">
+        <input type="checkbox" id="instantToggle" checked>
+        <span class="switch"></span>
+        <span class="toggle-txt">Corrigir na hora
+          <small>Mostra o gabarito logo após responder cada questão</small>
+        </span>
+      </label>
+    </div>
+
+    <button class="btn" id="startBtn">Começar simulado</button>
+    <div class="startmeta">
+      <span><b id="poolCount">0</b> questões disponíveis</span>
+      <span>Alternativas embaralhadas</span>
+    </div>
+  </section>
+
+  <!-- ===== QUIZ ===== -->
+  <section id="quiz" class="card hidden">
+    <div class="progress-head">
+      <span>Questão <b id="qnum">1</b> de <span id="qtotal">10</span></span>
+      <span class="score">Acertos: <b id="scoreNow">0</b></span>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+
+    <div id="temaTag" class="tema-tag"></div>
+    <div id="qtext" class="qtext"></div>
+    <div id="opts" class="opts"></div>
+
+    <div id="feedback" class="feedback"></div>
+
+    <div class="navrow">
+      <button class="btn ghost sm" id="quitBtn">Sair</button>
+      <button class="btn" id="nextBtn" disabled>Responder</button>
+    </div>
+  </section>
+
+  <!-- ===== RESULTS ===== -->
+  <section id="results" class="card hidden">
+    <div class="result-hero">
+      <div class="ring">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <circle cx="75" cy="75" r="64" fill="none" stroke="#eee4db" stroke-width="13"/>
+          <circle id="ringFill" cx="75" cy="75" r="64" fill="none" stroke="url(#grad)" stroke-width="13" stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="402"/>
+          <defs><linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7a1f3d"/><stop offset="100%" stop-color="#c08a2d"/>
+          </linearGradient></defs>
+        </svg>
+        <div class="pct"><span class="big" id="pctBig">0%</span><span class="lbl">acerto</span></div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <div class="result-line">Você acertou <b id="hitN">0</b> de <b id="totN">0</b> questões</div>
+    </div>
+
+    <div class="breakdown" id="breakdown"></div>
+
+    <div class="review-toggle">
+      <button class="btn ghost sm" id="revBtn">Ver questões que errei</button>
+    </div>
+    <div class="review" id="review"></div>
+
+    <div class="navrow">
+      <button class="btn ghost" id="redoWrongBtn">Treinar só os erros</button>
+      <button class="btn" id="restartBtn">Novo simulado</button>
+    </div>
+  </section>
+
+  <footer>
+    Compilado das provas antigas de Fisiopatologia (PA2) da Souza Marques
+    <span class="dot">·</span> 76 questões de banco
+    <span class="dot">·</span> feito pra estudar, confira sempre o gabarito oficial
+  </footer>
+</div>
+
+<script>
+/* ============ BANCO DE QUESTÕES ============ */
+/* Cada questão: tema, q (enunciado), o (alternativas), c (índice da correta) */
+const BANK = [
+{tema:"Neoplasias",q:"Em relação à disseminação hematogênica das neoplasias, podemos afirmar que:",o:["O implante peritoneal é uma via importante deste tipo de disseminação.","O fígado e os pulmões são pouco atingidos neste tipo de disseminação.","Este tipo de disseminação não ocorre nos melanomas.","As veias são veículos de maior facilidade de disseminação em relação às artérias."],c:3},
+{tema:"Genética e erros inatos",q:"Coronavírus possuem material genético RNA fita-simples e podem ser diagnosticados com o RT-PCR (padrão ouro para COVID-19). Analise:\nI. A PCR é uma técnica de amplificação das moléculas de DNA e/ou RNA.\nII. Para amplificar o SARS-CoV-2 deve-se inicialmente sintetizar um DNA complementar fita dupla com auxílio da transcriptase reversa.\nIII. A análise dos resultados ocorre após separação dos produtos de PCR com a eletroforese.\nEstão corretas:",o:["I e II","II e III","I e III","I, II e III"],c:1},
+{tema:"Distúrbios circulatórios",q:"São fatores que podem influenciar o desenvolvimento de infarto:",o:["Conteúdo de O2 no sangue, taxa de desenvolvimento da oclusão e vulnerabilidade tecidual à hipóxia.","Natureza do suprimento vascular, conteúdo de O2 no sangue, exposição a agentes carcinogênicos químicos indiretos.","Taxa de desenvolvimento da oclusão, natureza do suprimento vascular e exposição à radiação ionizante.","Vulnerabilidade tecidual à hipóxia, conteúdo de O2 no sangue e exposição a agentes carcinogênicos químicos diretos."],c:0},
+{tema:"Crescimento e endocrinologia",q:"Em relação à deficiência de GH é correto afirmar que:\nI – Pode ser secundária em pacientes com história de radioterapia, trauma ou cirurgia na região do encéfalo.\nII – Na criança, além do nanismo, cursa com tendência a obesidade, voz infantil, retardo da puberdade e hipoglicemia.\nIII – É causa de baixa estatura na criança, sem comprometimento da inteligência.\nIV – Na criança observa-se déficit de crescimento com idade óssea menor que a idade cronológica.",o:["I, II e III estão certas.","II, III e IV estão certas.","I, II e IV estão certas.","Todas estão certas."],c:3},
+{tema:"Crescimento e endocrinologia",q:"Durante um atendimento de uma criança de três anos com diarreia crônica constatamos que além de ter peso e altura baixos, ela também apresentava certo grau de retardo do desenvolvimento neuropsicomotor. Assinale a assertiva correta.",o:["Temos que investigar neoplasia de hipófise.","Todas as afirmativas estão corretas.","Podemos estar diante de uma desnutrição grave.","Temos que investigar a possibilidade de estarmos diante de um pan-hipopituitarismo."],c:1},
+{tema:"Genética e erros inatos",q:"R.G., 02 meses, apresentou teste do pezinho alterado, confirmando fenilcetonúria. Os pais são saudáveis e desconhecem outros casos na família. Analise:\nI. O tratamento envolve restrição dietética de fenilalanina e suplementação de tirosina.\nII. Os pais biológicos são heterozigotos para o alelo mutado.\nIII. Se a paciente engravidar deverá aumentar a rigidez da restrição de fenilalanina para evitar danos ao feto.\nEstão corretas:",o:["I e II.","I, II e III.","II e III.","I e III."],c:1},
+{tema:"Crescimento e endocrinologia",q:"Sobre o IGF1 (fator insuliniforme do crescimento) é correto afirmar:",o:["Sua ação endócrina depende da sua produção e de seu transportador pelo fígado.","É um hormônio produzido a partir da ação do GH, unicamente sobre os hepatócitos.","Sua produção é variável, sendo mais acentuada nas primeiras horas de sono.","Sua função sobre o crescimento decorre de ação exclusiva sobre osso."],c:0},
+{tema:"Genética e erros inatos",q:"Considerando homens que possuem a mutação germinativa para BRCA2 podemos afirmar que:\nI. A patologia tende a se manifestar precocemente.\nII. O prognóstico e sobrevida tende a ser equivalente ao de pacientes sem esta mutação germinativa.\nIII. É recomendado o aconselhamento genético para os familiares que possam ter herdado a mesma mutação.\nEstão corretas:",o:["I e III.","II e III.","I, II e III.","I e II."],c:0},
+{tema:"Genética e erros inatos",q:"A anemia falciforme é autossômica recessiva, com hemácias em foice. O alelo responsável é o HbS (forma S da globina β). Os heterozigotos não têm sintomas e têm 76% mais chance de sobreviver à malária que os homozigotos para o alelo normal (HbA). Algumas regiões da África têm alta prevalência de malária. O que ocorre com a frequência do alelo HbS nessas áreas?",o:["Diminui devido à seleção positiva dos homozigotos (HbAHbA), que não desenvolvem a anemia falciforme.","Aumenta devido à seleção positiva dos heterozigotos (HbAHbS), que são mais resistentes à malária.","Se mantém constante, uma vez que frequências gênicas não são influenciadas por fatores ambientais.","Diminui devido à seleção negativa dos homozigotos (HbSHbS), que têm menor expectativa de vida."],c:1},
+{tema:"Genética e erros inatos",q:"Até 25% dos pacientes com câncer colorretal têm história familiar. Um paciente foi diagnosticado aos 15 anos e relatou ser comum na família (pai, avó, irmã e tio paterno). Baseado nas informações, podemos suspeitar que:",o:["Se trata de câncer herdado, com mutação em genes supressores de tumor.","Se trata de câncer esporádico, com ação de fatores ambientais.","Se trata de câncer herdado, com mutação em proto-oncogenes.","Se trata de câncer familiar, com interação entre fatores genéticos e ambientais."],c:0},
+{tema:"Genética e erros inatos",q:"O Raquitismo resistente à vitamina D é uma patologia ligada ao sexo e dominante, cuja mutação ocorre em uma endopeptidase neutra reguladora de fosfato. Todas as alternativas caracterizam essa patologia, EXCETO:",o:["Deficiência de vitamina D na forma ativa.","Herança Monogênica.","Aumento na excreção renal de fosfato.","Somente homens afetados."],c:3},
+{tema:"Distúrbios circulatórios",q:"São características da fase inicial não progressiva do choque:",o:["Perfusão dos órgãos vitais mantida, taquicardia e vasoconstricção periférica.","Vasoconstricção periférica, diurese aumentada e hipotensão arterial sistêmica.","Vasodilatação, manutenção do débito urinário e aumento da pressão arterial.","Taquicardia, vasoconstrição periférica e anúria."],c:0},
+{tema:"Desnutrição proteico-energética",q:"Sobre a desnutrição proteico-energética (DPE):\nI. No marasmo o principal componente proteico comprometido é o somático.\nII. No kwashiorkor a albumina está normal ou discretamente diminuída.\nIII. No kwashiorkor encontramos albumina baixa e edema frio, mole e indolor.\nIV. No kwashiorkor a perda de peso pode ser mascarada pelo edema.",o:["I, III e IV estão corretas.","I, II e III estão corretas.","I, II e IV estão corretas.","II, III e IV estão corretas."],c:0},
+{tema:"Crescimento e endocrinologia",q:"Na investigação de uma criança de 5 anos com déficit de crescimento, a TC de crânio mostrou tumor ocupando a sela túrcica. A biópsia revelou neoplasia benigna com origem na hipófise anterior. Marque a alternativa correta:",o:["Adenoma hipofisário funcionante causando compressão da glândula normal com prejuízo na liberação do GHRH.","Adenocarcinoma hipofisário causando invasão da glândula normal com prejuízo na liberação do GH.","Adenoma hipofisário não funcionante causando compressão da glândula normal com prejuízo na liberação do hormônio do crescimento (GH).","Adenoma hipofisário não funcionante causando invasão da glândula normal com prejuízo na liberação do fator insuliniforme do crescimento (IGF1)."],c:2},
+{tema:"Neoplasias",q:'Marque a opção que melhor define o termo Carcinoma escamoso "in situ":',o:["As células neoplásicas estão restritas ao terço médio e inferior do epitélio.","As células neoplásicas estão restritas ao terço superior do epitélio.","As células neoplásicas comprometem todo o epitélio e ultrapassam a membrana basal até 0,5mm de profundidade no córion.","As células neoplásicas comprometem todo o epitélio, mas não ultrapassam a membrana basal."],c:3},
+{tema:"Neoplasias",q:"Assinale a assertiva correta em relação às Síndromes Paraneoplásicas:",o:["A gastrite crônica atrófica é um exemplo de síndrome paraneoplásica associada à neoplasia maligna gástrica.","Ocorrem na maioria dos pacientes com câncer, sendo a hipercoagulabilidade, as neuropatias e a miastenia muito frequentes.","Caracterizam-se por sintomas que não podem ser explicados pelo tumor primário ou sua disseminação, sendo a hipercalcemia a mais comum.","A hipercalcemia e a Síndrome de Cushing são exemplos de síndromes paraneoplásicas frequentes e estão associadas ao adenoma de mama."],c:2},
+{tema:"Anemias e hematologia",q:"Em um paciente que apresente anemia hemolítica podemos encontrar:",o:["Bradicardia e icterícia com predomínio de bilirrubina direta.","Hepatomegalia dolorosa e baixa dosagem de ferro.","Taquicardia e baixa dosagem do ferro.","Esplenomegalia e icterícia com predomínio de bilirrubina indireta."],c:3},
+{tema:"Distúrbios circulatórios",q:"Mulher de 65 anos, fumante, internada há 7 dias após queda e fratura de colo de fêmur direito. Inicia dor, edema e empastamento em panturrilha direita, diagnosticada trombose venosa profunda. Quais as alterações na patogenia da trombose e a complicação que pode ocorrer?",o:["Disfunção endotelial, vasodilatação e hipercoagulabilidade. Embolia pulmonar.","Lesão endotelial, fluxo turbilhonar e hipercoagulabilidade. Embolia gordurosa pulmonar.","Lesão endotelial, alteração de fluxo sanguíneo e hipercoagulabilidade. Tromboembolia pulmonar.","Disfunção endotelial, estase sanguínea e hipercoagulabilidade. Tromboembolia sistêmica."],c:2},
+{tema:"Distúrbios circulatórios",q:"Menino de 11 anos sofre uma ferida cortante na mão direita ao ajudar a mãe a descascar batatas. Que elementos participam na hemostasia primária dessa ferida?",o:["Vasoconstricção arteriolar, adesão, ativação e agregação de plaquetas.","Vasodilatação arteriolar, agregação plaquetária e ativação da cascata de coagulação.","Vasoconstricção arteriolar, adesão, ativação, agregação de plaquetas e liberação do ativador de plasminogênio tecidual.","Fator tecidual, formação de trombina, formação de fibrina e recrutamento de plaquetas."],c:0},
+{tema:"Anemias e hematologia",q:"Um paciente que se submeteu a uma gastrectomia apresentou mucosas hipocoradas, cansaço, parestesias e instabilidade da marcha. Qual a provável etiologia da anemia?",o:["Deficiência de Vitamina B12.","Deficiência de ácido fólico.","Deficiência de ferritina.","Deficiência de transferrina."],c:0},
+{tema:"Distúrbios circulatórios",q:"Menino de 6 anos sofre queda de patinete, com lesão cortocontusa na região frontal que começa a sangrar. Assinale a assertiva correta sobre a hemostasia da lesão.",o:["A formação do tampão hemostático primário se dá somente com a adesão plaquetária ao fator de Von Willebrand, o que explica a sua fragilidade.","A formação do tampão permanente e sólido depende da contração da fibrina polimerizada e das plaquetas agregadas, no local da lesão.","A ativação da cascata da coagulação pelo fator tecidual é etapa essencial para a formação do tampão hemostático primário.","A participação das células endoteliais na hemostasia se restringe à liberação de mediadores que promovem adesão e agregação plaquetária."],c:1},
+{tema:"Crescimento e endocrinologia",q:"Qual o quadro clínico encontrado em criança de 9 anos com adenoma de hipófise funcionante, secretor de hormônio do crescimento (GH)?",o:["Acromegalia, uma vez que nessa idade as epífises ósseas sofrem ação intensa do GH.","Gigantismo, uma vez que nessa idade o GH promoveria o crescimento ósseo excessivo, devido às epífises ósseas abertas.","Nanismo, uma vez que nessa idade, apesar das epífises abertas, o excesso de GH estimularia a produção de hormônio inibidor que comprometeria o crescimento.","Crescimento normal, uma vez que nessa idade as epífises ósseas não sofrem mais a ação do GH."],c:1},
+{tema:"Crescimento e endocrinologia",q:"Assinale a resposta que identifica os principais efeitos metabólicos do hormônio do crescimento (GH).",o:["Inibe a síntese proteica, inibe a lipólise e aumenta a resistência à insulina.","Estimula a síntese proteica, promove a lipólise e aumenta a resistência à insulina.","Estimula a síntese proteica, inibe a lipólise e reduz os níveis de glicose.","Inibe a síntese proteica, promove a lipólise e aumenta os níveis de glicose."],c:1},
+{tema:"Distúrbios circulatórios",q:"Assinale a assertiva correta em relação aos infartos:",o:["São áreas de necrose isquêmica, causada pela oclusão do suprimento sanguíneo arterial ou da drenagem venosa de um determinado tecido.","As compressões extrínsecas e intrínsecas de um vaso não são suficientes para causar infarto de qualquer natureza.","São frequentemente causados por varizes de membros inferiores e complicam com maior frequência nos pacientes com edema prévio.","O vasoespasmo e o edema generalizado são as etiologias principais de infartos brancos e vermelhos."],c:0},
+{tema:"Neoplasias",q:"Mulher de 40 anos descobre, no primeiro exame preventivo (colpocitológico), carcinoma de células escamosas da cérvice uterina. Qual a resposta correta sobre o vírus oncogênico associado e os elementos avaliados para o estadiamento do câncer?",o:["Papilomavirus humano, vírus de RNA. Tamanho do tumor primário, disseminação para linfonodos e presença de metástase.","Papilomavirus humano, vírus de DNA. Grau de diferenciação do tumor, disseminação para linfonodos e presença de metástase.","Papilomavirus humano, vírus de DNA. Tamanho do tumor primário, disseminação para linfonodos e presença de metástase.","Papilomavirus humano, vírus de RNA. Grau de diferenciação do tumor, disseminação para linfonodos e presença de metástase."],c:2},
+{tema:"Anemias e hematologia",q:"Uma criança que apresente anemia, crises de dor óssea e infarto tecidual principalmente no baço e na medula, pensamos em:",o:["Esferocitose.","Hemólise por uremia.","Anemia falciforme.","Talassemia."],c:2},
+{tema:"Distúrbios circulatórios",q:"Um paciente com ferida corto-contusa torácica à direita, trazido pelos bombeiros, dá entrada na emergência com dispneia, palidez cutaneomucosa, sudorese fria, taquicardia e hipotensão arterial. Qual a afirmativa mais provável para o distúrbio circulatório apresentado?",o:["Hemopericárdio e choque cardiogênico.","Hemotórax e choque hipovolêmico.","Hemotórax e choque anafilático.","Hemopericárdio e choque neurogênico."],c:1},
+{tema:"Anemias e hematologia",q:"Hemograma: Hemácias 2.98 milhões/mm³ (n=4.5–6.2), Hb 8.14 g/dl (n=12.8–17.8), Ht 23% (n=39–53), VCM 74.20 fl (n=80–98), HCM 24.81 pg (n=26–34), CHCM 29.05 g/dl (n=32–36). Leucócitos 10 mil/mm³ com eosinófilos 13% (n=0–6). Classifique a anemia (mecanismo) e identifique etiologia para a alteração do leucograma.",o:["Anemia normocrômica, normocítica por perda crônica, com provável infecção viral associada.","Anemia hipocrômica, microcítica por perda crônica, com provável parasitose.","Anemia hipocrômica, microcítica por perda crônica, com provável reação leucemoide associada.","Anemia normocrômica, normocítica por perda aguda, com provável processo bacteriano associado."],c:1},
+{tema:"Desnutrição proteico-energética",q:"Uma criança com diagnóstico de DPE (desnutrição proteico-energética) grave costuma apresentar ao exame físico:",o:["Bradipneia e mucosas normocoradas.","Bradicardia e sopro sistólico.","Taquicardia e sopro sistólico.","Taquipneia e mucosas normocoradas."],c:2},
+{tema:"Distúrbios circulatórios",q:"Mulher de 65 anos, hipertensa, dá entrada na emergência com dor torácica constritiva irradiando para MSE, iniciada há cerca de 1h após briga com vizinhos. Apresenta dispneia, cianose, pulsos finos, enchimento capilar lentificado, estertores bolhosos em ambas as bases, FC 120 bpm e PA 80x40 mmHg. Assinale a assertiva correta:",o:["O quadro corresponde a um choque hipovolêmico causado por rotura de artéria coronariana.","O quadro corresponde a pneumonia aguda, que evoluiu para um choque séptico.","O quadro corresponde a um infarto pulmonar seguido de choque cardiogênico por insuficiência cardíaca direita.","O quadro corresponde a um infarto agudo do miocárdio, seguido de um choque cardiogênico."],c:3},
+{tema:"Distúrbios circulatórios",q:"Mulher de 70 anos, com história prévia de TVP, sofre embolia e infarto pulmonar no pós-operatório de artroplastia de joelho. Assinale a assertiva correta:",o:["A área de infarto pulmonar é classificada como anêmica à macroscopia.","A resposta inflamatória na área do infarto evolui para reparação sem tecido cicatricial.","A estase sanguínea no pós-operatório predispõe a trombose venosa profunda e embolia.","A reposição hormonal com estrogênio poderia prevenir a trombose venosa profunda."],c:2},
+{tema:"Anemias e hematologia",q:"Paciente com hepatopatia crônica por alcoolismo: Hemácias 1.98 milhões/mm³ (n=4.5–6.2), Hb 6.0 g/dl, Ht 20%, VCM 103 fl (n=80–98), HCM 28 pg, CHCM 34 g/dl. Assinale a morfologia e o mecanismo fisiopatológico envolvido.",o:["Anemia macrocítica e normocrômica, por perda sanguínea aguda do tubo digestivo.","Anemia microcítica e hipocrômica, por deficiência de produção de eritrócitos.","Anemia microcítica e normocrômica, por perda sanguínea crônica do tubo digestivo.","Anemia macrocítica e normocrômica, por deficiência de produção de eritrócitos."],c:3},
+{tema:"Neoplasias",q:"Assinale a assertiva correta em relação às neoplasias:",o:["As malignas não causam metástases, crescem de maneira expansiva e têm bordas definidas.","As benignas se assemelham ao tecido de origem, sendo completamente anaplásicas.","Podem ser diferenciadas como benignas ou malignas de acordo com a taxa de crescimento, o grau de anaplasia, a capacidade de invasão local e de disseminação à distância.","As benignas podem adquirir funções inesperadas devido aos distúrbios do crescimento e diferenciação."],c:2},
+{tema:"Genética e erros inatos",q:"A galactosemia é um erro inato do metabolismo caracterizado por:",o:["Alergia à lactose tratável com restrição dietética de leite e derivados.","Intolerância à lactose tratável com reposição de lactase.","Inabilidade de converter galactose em glicose gerando acúmulo de metabólitos tóxicos.","Inabilidade de converter a lactose em glicose mais galactose resultando em níveis tóxicos de galactose."],c:2},
+{tema:"Anemias e hematologia",q:"Analise as alternativas referentes às anemias por deficiência de vitamina B12.\nI. Os neutrófilos apresentam-se hipersegmentados.\nII. A anemia perniciosa é forma específica de anemia megaloblástica, causada por gastrite autoimune que compromete a produção de fator intrínseco.\nIII. Pode ter como etiologia a síndrome disabsortiva.\nIV. Neste tipo de anemia encontramos hipercloridria associada.",o:["I, II e IV estão corretas.","II, III e IV estão corretas.","I, III e IV estão corretas.","I, II e III estão corretas."],c:3},
+{tema:"Neoplasias",q:"As neoplasias podem ser classificadas em herdadas (~5%), agregados familiares (~30%) e adquiridas (~65%). Sobre as neoplasias com agregados familiares podemos afirmar que:",o:["Possuem herança monogênica autossômica dominante, com mecanismo recessivo a nível celular.","Possuem herança autossômica dominante com ganho de função e efeito no heterozigoto.","Não possuem genética de risco, sendo consequência de erros de replicação e ação de agentes mutagênicos.","Possuem herança multifatorial, isto é, são consequência da interação entre fatores genéticos e fatores ambientais."],c:3},
+{tema:"Distúrbios circulatórios",q:"Um paciente com varizes de membros inferiores procura ambulatório com úlcera de difícil cicatrização, edema e dor em membro inferior direito. Sobre o quadro, podemos afirmar que:",o:["A úlcera ocorre por comprometimento de fluxo arterial e evolui para cicatrização primária.","O tromboembolismo pulmonar é complicação comum nesse paciente.","É compatível com trombose venosa superficial, em safena direita.","O edema ocorre devido à estase crônica e aumento da pressão hidrostática intersticial."],c:2},
+{tema:"Anemias e hematologia",q:"As hemoglobinopatias fazem parte das anemias hemolíticas. Dentre as de frequência importante no Rio de Janeiro podemos citar a α-talassemia, microcítica e hipocrômica. Sobre esta patologia, todas as afirmativas estão corretas, EXCETO:",o:["Dois portadores do traço talassêmico sempre terão uma prole com o genótipo _/_ α.","Existem quatro genótipos para α-talassemia.","O tratamento inclui transfusões sanguíneas sempre que necessário.","Um dos genótipos resulta em hidropsia fetal."],c:0},
+{tema:"Desnutrição proteico-energética",q:"Analise as afirmativas sobre crianças portadoras de kwashiorkor:\nI. Apresentam lesões cutâneas com áreas de hiper/hipopigmentação e descamação, dando aparência de pintura lascada.\nII. Apresentam comprometimento da imunidade, favorecendo infecções secundárias e recorrentes.\nIII. Apresentam alteração da cor dos cabelos, podendo ficar avermelhados, mais claros, finos e lisos que se soltam com facilidade.\nIV. Apresentam hepatomegalia e esteatose hepática.",o:["I, II e IV estão corretas.","II, III e IV estão corretas.","Todas estão corretas.","I, II e III estão corretas."],c:2},
+{tema:"Crescimento e endocrinologia",q:"Todos os itens abaixo são características do Nanismo Hipofisário, EXCETO:",o:["Mãos em tridente.","Possibilidade de tratamento com GH para a maior parte dos casos.","Herança usualmente do tipo Monogênica Autossômica Recessiva.","Crescimento Proporcional."],c:0},
+{tema:"Crescimento e endocrinologia",q:"Analise as assertivas sobre condições que podem interferir no crescimento normal de uma criança ou adolescente.\nI – Infecções e doenças crônicas podem prejudicar o crescimento por comprometimento das ações do GH, por citocinas inflamatórias.\nII – O hipotireoidismo e o excesso de glicocorticóides podem ser causa de baixa estatura.\nIII – Distúrbios nutricionais primários e psicossociais são causa de baixa estatura somente em países subdesenvolvidos.\nIV – As displasias ósseas são causas frequentes de baixa estatura.",o:["I, II e III.","I e II.","I, II, III e IV.","II, III e IV."],c:1},
+{tema:"Neoplasias",q:"Mulher de 55 anos com história de gastrite crônica é submetida à endoscopia com biópsia de lesão gástrica, cujo exame histopatológico mostrou adenocarcinoma. Podemos afirmar que:",o:["A gastrite crônica pode gerar atrofia gástrica, metaplasia intestinal, displasia e câncer.","A gastrite crônica é considerada uma síndrome paraneoplásica.","O processo inflamatório crônico não atua na fisiopatologia dessa neoplasia maligna.","Helicobacter pylori é a bactéria responsável pela gastrite crônica e não age como agente carcinogênico."],c:0},
+{tema:"Crescimento e endocrinologia",q:"Paciente masculino de 40 anos, com aumento das extremidades nos últimos 2 anos, alargamento dos dedos (perda da aliança, aumento do sapato), fácies embrutecida, prognatismo, macroglossia e hepatomegalia. IGF1 aumentado e dosagem de GH não suprimida após oferta de glicose. Assinale a afirmativa correta:",o:["O quadro corresponde ao Gigantismo consequente ao aumento de GH sobre cartilagem, tecido subcutâneo, osso e vísceras.","As alterações nas estruturas cartilaginosas desse paciente podem causar dores articulares e apneia, acompanhando as alterações clínicas descritas, próprias da Acromegalia.","As alterações clínicas apresentadas são características do quadro de Acromegalia causado por adenoma funcionante da neuro-hipófise.","O quadro apresentado em geral está associado a um adenoma de hipófise, que necessariamente se caracteriza pelo aumento exclusivo do hormônio de crescimento."],c:1},
+{tema:"Anemias e hematologia",q:'Assinale a alternativa que completa a afirmação: "O diagnóstico de beta-talassemia é mais efetivo após os 3 meses de vida pois..."',o:["A síntese da cadeia alfa somente tem início após o nascimento, prejudicando um diagnóstico mais precoce.","A criança não apresenta condições físicas para resistir ao exame antes dos três meses de vida.","Durante os primeiros três meses as hemácias ainda possuem alta concentração de hemoglobina fetal, o que pode resultar em falso positivos.","São necessários alguns meses para que a síntese da cadeia beta atinja sua taxa de expressão que permanecerá na idade adulta."],c:3},
+{tema:"Neoplasias",q:"Assinale a assertiva correta em relação aos tumores indiferenciados:",o:["Apresentam pouco poder de gerar metástases.","Apresentam células com características anaplásicas.","Sempre apresentam pouca neovascularização.","São de característica predominante entre os tumores benignos."],c:1},
+{tema:"Anemias e hematologia",q:"Assinale a assertiva correta em relação às anemias:",o:["As suas consequências dependem da sua gravidade, velocidade com que se desenvolvem e do seu mecanismo fisiopatológico.","Palidez cutaneomucosa, hipotensão arterial e sopro sistólico 3+/4 sempre acompanham as anemias por perdas agudas.","Se a mesma se inicia de forma aguda pode demorar a apresentar manifestações clínicas, devido à adaptação do organismo.","As anemias hemolíticas, por terem etiologias agudas, estão associadas à icterícia com predomínio de bilirrubina direta."],c:0},
+{tema:"Genética e erros inatos",q:"Qual a rota metabólica diretamente atingida na fenilcetonúria?",o:["Conversão da tirosina em ácido fenilpirúvico.","Conversão da tirosina em melanina.","Conversão do ácido fenilpirúvico em acetoacetato.","Conversão da fenilalanina em tirosina."],c:3},
+{tema:"Distúrbios circulatórios",q:"Considerando os fatores abaixo, assinale o que pode ser responsável pela alteração do fluxo sanguíneo e predisposição à Trombose.",o:["Imobilização no leito.","Área de infarto do miocárdio.","Policitemia.","Todas as respostas acima."],c:3},
+{tema:"Crescimento e endocrinologia",q:"Que exames devem ser solicitados para a investigação inicial diante da suspeita de Nanismo Hipofisário?",o:["RX de punho para avaliação da idade óssea e dosagem do fator insuliniforme do crescimento (IGF1) e GH.","RX de punho para avaliação da idade óssea e dosagem de somatostatina e GH.","Ressonância magnética de crânio e dosagem de GH e somatostatina.","Tomografia de crânio e dosagem de hormônio do crescimento (GH) e cortisol."],c:0},
+{tema:"Neoplasias",q:"Em relação às neoplasias malignas é correto afirmar:",o:["A angiogênese é necessária para o crescimento do tumor, mas não participa do desenvolvimento da metástase.","A caquexia associada se deve à diminuição de apetite causada pelo aumento de citocinas (TNF, IL1) e à produção de fator indutor de proteólise.","Os fatores ambientais têm menor importância no desenvolvimento do câncer que os fatores genéticos.","Os linfócitos T citotóxicos, células natural killer e macrófagos atuam na imunidade anti-tumoral, não havendo participação de anticorpos."],c:1},
+{tema:"Anemias e hematologia",q:"Assinale uma assertiva correta em relação a um paciente que tenha apresentado hemorragia digestiva aguda grave.",o:["Caso sobreviva haverá hemodiluição em 2 a 3 dias e alteração do hematócrito.","Todas as assertivas estão corretas.","Acarretará baixa de O2 nos tecidos, estimulando as células renais a produzirem mais eritropoetina que estimula a MO, levando a aumento dos reticulócitos.","A gravidade desta anemia dependerá da quantidade e velocidade da perda."],c:1},
+{tema:"Anemias e hematologia",q:"Assinale a assertiva correta em relação ao que o hemograma de um paciente em tratamento com quimioterapia pode apresentar.",o:["Linfocitose e granulopoiese ineficaz.","Pancitopenia e aplasia de medula.","Leucopenia e medula hiper-reativa.","Leucocitose compensatória e medula hiper-reativa."],c:1},
+{tema:"Anemias e hematologia",q:"Hemograma de paciente adulto: Hemácias 2.95 milhões (n=4.5–6.2), Hb 7.85 g/dl, Ht 26%, VCM 102.20 fl (n=80–98), HCM 27.60 pg, CHCM 32.05 g/dl, Leucócitos 17 mil/mm³, segmentados 68% (n=54–64), bastões 15% (n=0–5). Assinale a afirmativa que mais convém na análise:",o:["Anemia normocítica e normocrômica, com etiologia gastrite aguda com deficiência de fator intrínseco e processo alérgico associado.","Anemia macrocítica e normocrômica, com etiologia dieta pobre em vegetais frescos e frutas e um processo bacteriano agudo.","Anemia macrocítica e normocrômica, com etiologia dieta pobre em ferro e um processo bacteriano agudo.","Anemia macrocítica e hipocrômica, com etiologia doença crônica e um processo bacteriano agudo."],c:1},
+{tema:"Desnutrição proteico-energética",q:"Uma criança de 4 anos, nascida a termo e sem anomalias congênitas, está com apenas 70% do peso normal para sua idade. Ao exame físico mostra edema dos membros inferiores e abdome distendido. Sua pele é descamativa e com áreas de hipopigmentação. Qual a alteração nutricional mais provável?",o:["Kwashiorkor.","Marasmo.","Deficiência de vitamina A.","Deficiência de vitamina C."],c:0},
+{tema:"Genética e erros inatos",q:"No homem, a acondroplasia é anomalia genética autossômica dominante, com nanismo de cabeça e tronco normais, mas braços e pernas curtos. Em que situação se trata de distúrbio letal para o feto?",o:["Presença de dois alelos dominantes.","Presença de dois alelos recessivos.","Presença de um alelo dominante e um alelo recessivo.","Não há registros de letalidade fetal por nanismo acondroplásico."],c:0},
+{tema:"Desnutrição proteico-energética",q:"São consideradas etiologias de marasmo em adultos:",o:["Etilismo crônico.","Câncer avançado.","Todas as assertivas encontram-se corretas.","Doenças psiquiátricas."],c:2},
+{tema:"Neoplasias",q:"Análises de expressão gênica em Tumores demonstraram que células cancerígenas podem ter atividade genética idêntica à expressão que ocorre durante algumas fases do desenvolvimento embrionário e fetal. Desta forma podemos deduzir que:",o:["Alguns genes, presentes nas células do embrião/feto, não deveriam estar presentes em outras fases da vida, mas são observados nas células cancerígenas.","Alguns genes mutados, expressos no desenvolvimento embrionário e fetal, deveriam estar ligados em momentos posteriores da vida, mas somente são expressos nas células cancerígenas.","Alguns genes normais, expressos no desenvolvimento embrionário e fetal, deveriam estar desligados em outras fases da vida do organismo, porém são expressos em células cancerígenas.","Alguns genes mutados, expressos no desenvolvimento embrionário e fetal, não deveriam expressar seus efeitos maléficos em outras etapas, mas são expressos nas células cancerígenas."],c:2},
+{tema:"Neoplasias",q:"Em relação às características gerais das neoplasias malignas:\nI. Podem invadir localmente estruturas vizinhas por contiguidade.\nII. Frequentemente crescem de maneira expansiva, causando compressão das estruturas vizinhas.\nIII. Os capilares linfáticos são mais susceptíveis à invasão que as artérias.\nIV. Uma variante de metástase menos frequente é o padrão de implante em cavidades.\nEstão CORRETAS:",o:["I, II, III e IV.","II, III e IV.","I, II e III.","I, III e IV."],c:3},
+{tema:"Distúrbios circulatórios",q:"Analise as assertivas sobre os trombos.\nI. São classificados como murais aqueles que se desenvolvem nas cavidades cardíacas e que tenham como etiologia a hipercoagulabilidade.\nII. Os trombos arteriais têm como fator importante na sua patogenia a turbulência do fluxo sanguíneo.\nIII. Os trombos venosos são classificados como vermelhos por apresentarem maior número de eritrócitos, em consequência da estase.\nIV. Os trombos não são aderidos à parede vascular, o que facilita a liberação de êmbolos.",o:["II e III.","I e II.","III e IV.","II e IV."],c:0},
+{tema:"Distúrbios circulatórios",q:"Assinale a resposta correta em relação aos infartos:",o:["A trombose e embolia respondem pela etiologia em menos de 50% dos casos.","Os que ocorrem nas extremidades são chamados de gangrena e se caracterizam por necrose de coagulação.","Os que ocorrem em órgãos de circulação dupla são em geral infartos brancos.","Os cerebrais são raros e se caracterizam por necrose de coagulação."],c:1},
+{tema:"Desnutrição proteico-energética",q:"Qual dos seguintes exames laboratoriais tem grande valor no diagnóstico diferencial entre marasmo e kwashiorkor?",o:["Dosagem de colesterol total e frações.","Dosagem de albumina plasmática.","Dosagem de ferritina.","Dosagem da glicemia."],c:1},
+{tema:"Genética e erros inatos",q:"A técnica de PCR (reação em cadeia de polimerase), a mais utilizada para amplificação do DNA in vitro, revolucionou o acesso a informações genéticas. Com relação a essa técnica, assinale a opção correta.",o:["Na PCR, os primers (iniciadores) se anelam (hibridam) com moléculas de DNA sob a forma de fita dupla.","A PCR necessita ser acompanhada de um método de purificação para separar os fragmentos amplificados do restante do genoma.","A PCR também pode ser aplicada na análise de RNA fita simples.","A enzima Taq DNA polimerase, utilizada na PCR, é capaz de manter sua atividade mesmo nas altas temperaturas necessárias para desnaturar a molécula de DNA."],c:3},
+{tema:"Distúrbios circulatórios",q:"Paciente idoso interna com quadro de infecção bacteriana generalizada (sepse) apresentando extremidades quentes, taquicardia, taquipneia e hipotensão arterial. Assinale a assertiva correta em relação ao choque séptico que o paciente apresenta:",o:["O choque séptico é causa rara de óbito nas unidades de terapia intensiva.","As alterações vasculares principais produzidas pelos mediadores químicos são a vasoconstricção e aumento de permeabilidade vascular.","A vasodilatação decorre da ação direta da endotoxina bacteriana nos vasos sanguíneos.","A endotoxina bacteriana é capaz de ativar mecanismos pró-coagulantes, levando ao desenvolvimento de coagulação intravascular disseminada."],c:3},
+{tema:"Genética e erros inatos",q:"Recém-nascido a termo sem fator de risco para infecção perinatal, com deterioração do quadro clínico sem razões óbvias em horas, apresentando letargia, hipoglicemia e cromatografia de açúcares alterada. Em qual suspeita clínica pode resultar?",o:["Erro inato do metabolismo de proteína, herança autossômica dominante.","Erro inato do metabolismo de proteínas, herança autossômica recessiva.","Erro inato do metabolismo de carboidratos, herança autossômica recessiva.","Erro inato do metabolismo de carboidratos, herança autossômica dominante."],c:2},
+{tema:"Genética e erros inatos",q:'"Em situação fisiológica, fatores de crescimento secretados resultam na degradação da neurofibromina permitindo a sinalização celular, para estímulo de proliferação celular. Após 1h a 1h30min os níveis de neurofibromina voltam ao normal interrompendo esta sinalização." Baseado nessa citação, a neurofibromina é uma proteína:',o:["Produzida por um proto-oncogene, do tipo molécula de sinalização celular.","Produzida por um proto-oncogene, do tipo fator de transcrição.","Produzida por um gene supressor de tumor, do tipo cuidador.","Produzida por um gene supressor de tumor, do tipo regulador de ciclo celular."],c:3},
+{tema:"Neoplasias",q:"As modificações na atividade da telomerase, enzima responsável pela replicação dos telômeros, estão relacionadas com o processo de envelhecimento e câncer. Com relação à manutenção dos telômeros pela telomerase, assinale a alternativa correta:",o:["A diminuição da atividade da telomerase promove a diminuição do telômero e consequentemente o câncer.","A diminuição da atividade da telomerase promove o aumento do telômero e consequentemente o envelhecimento.","O aumento da atividade da telomerase promove o aumento dos telômeros e consequentemente o câncer.","O aumento na atividade da telomerase promove a redução dos telômeros e consequentemente o envelhecimento."],c:2},
+{tema:"Crescimento e endocrinologia",q:"Marque a opção correta sobre o hormônio do crescimento (GH).",o:["Os hormônios hipotalâmicos GHRH e somatostatina atuam estimulando sua liberação.","O exercício físico e o aumento de ácidos graxos livres estimulam sua produção.","O adenoma hipotalâmico é a principal causa de aumento de produção.","O jejum e a hipoglicemia estimulam sua produção."],c:3},
+{tema:"Distúrbios circulatórios",q:"Avalie as afirmativas sobre embolia:\nI. A tromboembolia pulmonar tem como principais fontes do êmbolo as veias ilíacas, poplíteas ou femorais.\nII. Na tromboembolia sistêmica o êmbolo tem origem em trombo mural ventricular ou atrial esquerdos e caminha pela circulação arterial.\nIII. A tromboembolia sistêmica pode causar AVE e infartos em membros inferiores e órgãos.\nIV. As embolias gasosa e amniótica são raras, mas podem ocorrer após procedimentos obstétricos e no pós-parto, respectivamente.",o:["II, III e IV.","I, II e III.","I, III e IV.","I, II, III e IV."],c:3},
+{tema:"Distúrbios circulatórios",q:"Existem condições que aumentam o risco de trombose, associadas a um dos fatores da tríade de Virchow.\nI. Algumas neoplasias malignas produzem substâncias pró-coagulantes que aumentam o risco de trombose por hipercoagulabilidade secundária.\nII. O uso de anticoncepcional pode reduzir o risco de trombose por promover síntese de fatores anticoagulantes pelos hepatócitos.\nIII. A disfunção endotelial causada pela hipertensão arterial pode aumentar o risco de trombose.\nIV. Válvulas cardíacas com cicatriz aumentam o risco de trombose por gerar fluxo turbilhonar e disfunção endotelial.\nEstão corretas:",o:["II, III e IV.","I, II e III.","I, II e IV.","I, III e IV."],c:3},
+{tema:"Genética e erros inatos",q:"O diagnóstico molecular da acondroplasia utiliza uma tecnologia denominada RFLP (polimorfismo de tamanho para fragmentos de restrição). Sobre esta tecnologia pode-se afirmar que:",o:["Envolve somente PCR (reação em cadeia da polimerase) e eletroforese.","Envolve PCR (reação em cadeia da polimerase), seguido de digestão com enzimas de restrição e eletroforese.","Envolve PCR (reação em cadeia da polimerase), seguido de sequenciamento do produto.","Envolve PCR (reação em cadeia da polimerase), seguido de digestão com enzimas de restrição."],c:1},
+{tema:"Crescimento e endocrinologia",q:"Assinale a afirmativa correta sobre a deficiência de hormônio do crescimento em adultos.",o:["Os pacientes em geral desenvolvem manifestações clínicas lentamente e costumam cursar com aumento compensatório de outros hormônios hipofisários.","Esses pacientes apresentam fatores de risco cardiovasculares decorrentes de obesidade centrípeta e dislipidemia.","O adenoma de hipófise não funcionante é etiologia frequente, com comprometimento restrito do hormônio do crescimento.","É uma condição em que o paciente apresenta aumento de massa corporal magra, menos energia e menor capacidade de exercício."],c:1},
+{tema:"Desnutrição proteico-energética",q:"Diante de uma criança em idade escolar que comece a apresentar perda de peso, que parâmetros precisam ser analisados para se chegar ao diagnóstico de uma DPE?\nI. Curva de peso/idade.\nII. Espessura das dobras cutâneas.\nIII. Raio X de sela túrcica.\nIV. Dosagem das proteínas séricas.",o:["I, II e IV estão corretas.","II, III e IV estão corretas.","I, II e III estão certas.","I, III e IV estão corretas."],c:0},
+{tema:"Distúrbios circulatórios",q:"Um paciente com diagnóstico de infarto agudo do miocárdio foi a óbito quarenta minutos após o diagnóstico. Assinale a assertiva correta:",o:["Não encontraremos sinal inflamatório por ser manifestação tardia, surgindo após a necrose.","Na autópsia encontraremos áreas de isquemia e necrose de coagulação.","Na autópsia poderemos encontrar trombo em artéria coronariana sem necrose de coagulação.","Só encontraríamos necrose de coagulação se o óbito ocorresse 72 horas após o diagnóstico."],c:2},
+{tema:"Anemias e hematologia",q:"Eritrograma: Hemácias 2.10 milhões/mm³ (n=4–5.4), Hb 9.6 g/dl (n=12–16), Ht 19% (n=35–47), VCM 83 fl (n=80–98), HCM 28 pg (n=26–34), CHCM 28 g/dl (n=32–36). Assinale a assertiva que contém a morfologia correta e uma etiologia para esta anemia.",o:["Anemia normocítica e normocrômica, por insuficiência renal crônica.","Anemia normocítica e hipocrômica, por ocupação da medula óssea por metástases.","Anemia macrocítica e hipocrômica, por insuficiência renal aguda.","Anemia microcítica e hipocrômica por deficiência de ferro."],c:0},
+{tema:"Distúrbios circulatórios",q:"Um paciente de 66 anos sofre um acidente vascular encefálico (AVE), três dias após ter sofrido um infarto agudo do miocárdio em ventrículo esquerdo. Qual a etiologia mais provável desse AVE?",o:["Embolia gordurosa advinda de uma placa de aterosclerose.","Embolia gordurosa advinda de uma fratura de colo de fêmur.","Tromboembolia advinda de uma trombose venosa profunda.","Tromboembolia advinda de um trombo mural."],c:3},
+{tema:"Neoplasias",q:"Em relação à imuno-histoquímica, método diagnóstico laboratorial das neoplasias, marque a alternativa correta:",o:["A imuno-histoquímica não é capaz de determinar o local de origem dos tumores malignos.","A imuno-histoquímica possui pouca especificidade, por isso é muito utilizada para categorização de neoplasias indiferenciadas.","A imuno-histoquímica na maioria das vezes é específica na categorização de tumores indiferenciados.","A imuno-histoquímica permite ótima visualização das células tumorais pois cora os tumores indiferenciados de forma inespecífica."],c:2}
+];
+
+/* ============ ESTADO ============ */
+const TEMAS = [...new Set(BANK.map(q=>q.tema))];
+let selectedTemas = new Set(TEMAS);
+let chosenCount = 20;
+let instant = true;
+let quiz = [];      // questões da sessão {ref, order:[shuffled idx], answered, picked}
+let idx = 0;
+let score = 0;
+
+const $ = id => document.getElementById(id);
+const shuffle = a => { const x=[...a]; for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];} return x; };
+
+/* ============ START SCREEN ============ */
+function renderTemaChips(){
+  const el = $('temaChips'); el.innerHTML='';
+  TEMAS.forEach(t=>{
+    const n = BANK.filter(q=>q.tema===t).length;
+    const c = document.createElement('button');
+    c.className='chip'+(selectedTemas.has(t)?' on':'');
+    c.innerHTML = t+' <span class="n">'+n+'</span>';
+    c.onclick=()=>{
+      if(selectedTemas.has(t)){ if(selectedTemas.size>1) selectedTemas.delete(t); }
+      else selectedTemas.add(t);
+      renderTemaChips(); renderCountChips(); updatePool();
+    };
+    el.appendChild(c);
+  });
+}
+function poolSize(){ return BANK.filter(q=>selectedTemas.has(q.tema)).length; }
+function renderCountChips(){
+  const el=$('countChips'); el.innerHTML='';
+  const max=poolSize();
+  const opts=[10,20,30,40].filter(n=>n<max);
+  opts.push(max); // "todas"
+  [...new Set(opts)].forEach(n=>{
+    const isAll = n===max;
+    const c=document.createElement('button');
+    c.className='chip'+((chosenCount===n||(chosenCount>max&&isAll))?' on':'');
+    c.textContent = isAll ? 'Todas ('+n+')' : n;
+    c.onclick=()=>{ chosenCount=n; renderCountChips(); };
+    el.appendChild(c);
+  });
+  if(chosenCount>max) chosenCount=max;
+}
+function updatePool(){ $('poolCount').textContent = poolSize(); renderCountChips(); }
+
+$('instantToggle').onchange = e => instant = e.target.checked;
+
+$('startBtn').onclick = ()=>{
+  const pool = BANK.map((q,i)=>({q,i})).filter(x=>selectedTemas.has(x.q.tema));
+  const picked = shuffle(pool).slice(0, Math.min(chosenCount, pool.length));
+  quiz = picked.map(x=>({
+    ref:x.q,
+    order:shuffle(x.q.o.map((_,k)=>k)),
+    answered:false, picked:null
+  }));
+  idx=0; score=0;
+  show('quiz'); renderQ();
+};
+
+/* ============ QUIZ SCREEN ============ */
+function show(which){
+  ['start','quiz','results'].forEach(s=>$(s).classList.toggle('hidden', s!==which));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQ(){
+  const item = quiz[idx];
+  $('qnum').textContent = idx+1;
+  $('qtotal').textContent = quiz.length;
+  $('scoreNow').textContent = score;
+  $('barFill').style.width = (idx/quiz.length*100)+'%';
+  $('temaTag').textContent = item.ref.tema;
+  $('qtext').innerHTML = item.ref.q.replace(/\n/g,'<br>');
+
+  const fb=$('feedback'); fb.className='feedback'; fb.innerHTML='';
+  const opts=$('opts'); opts.innerHTML='';
+  const letters=['A','B','C','D','E'];
+
+  item.order.forEach((origIdx, pos)=>{
+    const btn=document.createElement('button');
+    btn.className='opt';
+    btn.innerHTML='<span class="key">'+letters[pos]+'</span><span class="txt">'+item.ref.o[origIdx]+'</span>';
+    btn.onclick=()=>pick(pos, origIdx, btn);
+    opts.appendChild(btn);
+  });
+
+  const nb=$('nextBtn');
+  if(item.answered){
+    lockAndReveal();
+    nb.textContent = idx===quiz.length-1 ? 'Ver resultado' : 'Próxima';
+    nb.disabled=false;
+  } else {
+    nb.textContent = instant ? 'Responder' : (idx===quiz.length-1?'Finalizar':'Próxima');
+    nb.disabled = true;
+  }
+}
+
+function pick(pos, origIdx, btn){
+  const item=quiz[idx];
+  if(item.answered && instant) return; // já travado
+  [...$('opts').children].forEach(c=>c.classList.remove('sel'));
+  btn.classList.add('sel');
+  item.picked=origIdx;
+  $('nextBtn').disabled=false;
+}
+
+function lockAndReveal(){
+  const item=quiz[idx];
+  const correct=item.ref.c;
+  [...$('opts').children].forEach((c,pos)=>{
+    c.classList.add('locked');
+    const orig=item.order[pos];
+    if(orig===correct){ c.classList.add('right'); c.querySelector('.mark')||c.insertAdjacentHTML('beforeend','<span class="mark">✓</span>'); }
+    if(orig===item.picked && orig!==correct){ c.classList.add('wrong'); c.insertAdjacentHTML('beforeend','<span class="mark">✕</span>'); }
+  });
+  const fb=$('feedback');
+  if(item.picked===correct){ fb.className='feedback show ok'; fb.innerHTML='<b>Certa!</b> Resposta correta: '+item.ref.o[correct]; }
+  else { fb.className='feedback show no'; fb.innerHTML='<b>Resposta correta:</b> '+item.ref.o[correct]; }
+}
+
+$('nextBtn').onclick = ()=>{
+  const item=quiz[idx];
+  if(instant && !item.answered){
+    // primeira ação: corrigir
+    item.answered=true;
+    if(item.picked===item.ref.c) score++;
+    lockAndReveal();
+    $('nextBtn').textContent = idx===quiz.length-1 ? 'Ver resultado' : 'Próxima';
+    return;
+  }
+  // modo final OU já corrigido -> avançar
+  if(!instant && !item.answered){
+    item.answered=true;
+    if(item.picked===item.ref.c) score++;
+  }
+  if(idx<quiz.length-1){ idx++; renderQ(); }
+  else finish();
+};
+
+$('quitBtn').onclick = ()=>{ if(confirm('Sair e voltar ao início? O progresso atual será perdido.')) show('start'); };
+
+/* ============ RESULTS ============ */
+function finish(){
+  const total=quiz.length;
+  const pct=Math.round(score/total*100);
+  show('results');
+
+  // ring
+  const circ=402, off=circ-(circ*pct/100);
+  const ring=$('ringFill');
+  ring.style.transition='none'; ring.style.strokeDashoffset=circ;
+  requestAnimationFrame(()=>{ ring.style.transition='stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)'; ring.style.strokeDashoffset=off; });
+  let cur=0; const step=()=>{ cur+=Math.ceil(pct/24)||1; if(cur>=pct)cur=pct; $('pctBig').textContent=cur+'%'; if(cur<pct)requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+
+  $('hitN').textContent=score; $('totN').textContent=total;
+  let v;
+  if(pct>=85) v='Excelente — você está pronto.';
+  else if(pct>=70) v='Bom desempenho. Refine os pontos fracos.';
+  else if(pct>=50) v='No caminho. Revise os temas abaixo.';
+  else v='Hora de revisar com calma. Bora de novo.';
+  $('verdict').textContent=v;
+
+  // breakdown por tema
+  const byTema={};
+  quiz.forEach(it=>{
+    const t=it.ref.tema;
+    byTema[t]=byTema[t]||{hit:0,tot:0};
+    byTema[t].tot++;
+    if(it.picked===it.ref.c) byTema[t].hit++;
+  });
+  const bd=$('breakdown'); bd.innerHTML='';
+  Object.entries(byTema).sort((a,b)=>(a[1].hit/a[1].tot)-(b[1].hit/b[1].tot)).forEach(([t,d])=>{
+    const p=Math.round(d.hit/d.tot*100);
+    bd.insertAdjacentHTML('beforeend',
+      '<div class="brk"><span class="name">'+t+'</span>'+
+      '<span class="minibar"><i style="width:'+p+'%"></i></span>'+
+      '<span class="frac">'+d.hit+'/'+d.tot+'</span></div>');
+  });
+
+  // review
+  const wrong=quiz.filter(it=>it.picked!==it.ref.c);
+  const rv=$('review'); rv.innerHTML='';
+  $('revBtn').textContent='Ver questões que errei ('+wrong.length+')';
+  $('revBtn').disabled = wrong.length===0;
+  $('redoWrongBtn').disabled = wrong.length===0;
+  if(wrong.length===0){ $('revBtn').textContent='Você não errou nenhuma 🎉'; }
+  wrong.forEach(it=>{
+    const yours = it.picked==null ? '<span class="rev-a yours"><span class="tag">Em branco</span>Não respondida</span>'
+      : '<span class="rev-a yours"><span class="tag">Sua resposta</span>'+it.ref.o[it.picked]+'</span>';
+    rv.insertAdjacentHTML('beforeend',
+      '<div class="rev-item"><div class="rev-q">'+it.ref.q.replace(/\n/g,'<br>')+'</div>'+
+      yours+
+      '<span class="rev-a correct"><span class="tag">Correta</span>'+it.ref.o[it.ref.c]+'</span></div>');
+  });
+  $('review').classList.remove('show');
+}
+
+$('revBtn').onclick = ()=>{ const r=$('review'); r.classList.toggle('show'); $('revBtn').textContent = r.classList.contains('show')?'Ocultar revisão':'Ver questões que errei'; };
+
+$('redoWrongBtn').onclick = ()=>{
+  const wrong=quiz.filter(it=>it.picked!==it.ref.c).map(it=>it.ref);
+  if(!wrong.length) return;
+  quiz = shuffle(wrong).map(q=>({ref:q, order:shuffle(q.o.map((_,k)=>k)), answered:false, picked:null}));
+  idx=0; score=0; show('quiz'); renderQ();
+};
+
+$('restartBtn').onclick = ()=> show('start');
+
+/* ============ INIT ============ */
+renderTemaChips();
+updatePool();
+</script>
+</body>
+</html>
